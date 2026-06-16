@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm remove *)",
+      "Bash(pnpm lint *)",
+      "Bash(break)",
+      "Bash(git mv *)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(docker --version)",
+      "Bash(docker compose *)",
+      "Bash(pnpm --version)",
+      "Bash(timeout 8 pnpm view @prisma/client version)",
+      "Bash(timeout 20 pnpm view prisma@6 version)",
+      "Bash(docker context *)",
+      "Bash(timeout 15 docker info)",
+      "Read(//run/**)",
+      "Bash(export DOCKER_HOST=unix:///var/run/docker.sock)",
+      "Bash(nohup pnpm dev)",
+      "Bash(echo \"started pid $!\")",
+      "Bash(node /tmp/crud.mjs)",
+      "Bash(node _smoke.mjs)",
+      "Bash(curl -s http://localhost:3000/day)",
+      "Bash(curl -s http://localhost:3000/day -o /tmp/day.html)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"next-server\")",
+      "Bash(echo \"pid $!\")",
+      "Bash(cd /home/dev/my_projects/planner_next *)",
+      "Bash(node _cleanup.mjs)",
+      "Bash(kill 135054)",
+      "Bash(pkill -9 -f \"next dev\")",
+      "Bash(pkill -9 -f \"next-server\")",
+      "Bash(ps -eo pid,ppid,cmd)",
+      "Bash(nohup pnpm exec prisma studio)",
+      "Bash(curl -s --max-time 60 http://localhost:3000/week)",
+      "Bash(git check-ignore *)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
+    ]
+  }
+}

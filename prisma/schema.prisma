@@ -1,0 +1,42 @@
+// Each planner page gets its own table. Rows are key/value entries that mirror
+// the per-cell data the UI edits, so a page reads/writes only its own table.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Day page: one row per calendar day, holding that day's note and theme.
+// key = "YYYY-MM-DD"
+model DayEntry {
+  key       String   @id
+  note      String   @default("")
+  theme     String   @default("")
+  updatedAt DateTime @updatedAt
+
+  @@map("day_entries")
+}
+
+// Week page: weekly note/theme plus the per-day notes shown in the week grid.
+// key = "week:<year>-<weekNumber>" (note + theme) or "day:YYYY-MM-DD" (note)
+model WeekEntry {
+  key       String   @id
+  note      String   @default("")
+  theme     String   @default("")
+  updatedAt DateTime @updatedAt
+
+  @@map("week_entries")
+}
+
+// Month page: per-month notes plus the per-day cell notes of the year grid.
+// key = "month:<year>-<monthIndex>" or "day:YYYY-MM-DD". Months have no theme.
+model MonthEntry {
+  key       String   @id
+  note      String   @default("")
+  updatedAt DateTime @updatedAt
+
+  @@map("month_entries")
+}

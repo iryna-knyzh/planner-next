@@ -1,0 +1,27 @@
+.copied-tooltip {
+  position: fixed;
+  transform: translate(-50%, -120%);
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: pop 0.9s ease forwards;
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.95);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -120%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -140%) scale(0.98);
+  }
+}

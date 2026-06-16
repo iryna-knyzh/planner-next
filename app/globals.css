@@ -1,26 +1,31 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-inter-tight);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #fafafa;
+  color: #000000;
+  font-family: var(--font-inter-tight), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.underlined-textarea {
+  line-height: 1.5em;
+
+  /* Repeating background gradient lines under each text line */
+  background-image: linear-gradient(
+    transparent,
+    transparent calc(1.5em - 1px),
+    #e5e5e5 0px
+  );
+  background-repeat: repeat-y;
+  background-size: 100% 1.5em;
+  background-attachment: local;
+
+  width: 100%;
+  height: 10em;
+  resize: none;
 }

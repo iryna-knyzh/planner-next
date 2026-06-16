@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // The project's own pnpm-workspace.yaml is the workspace root.
+  turbopack: {
+    root: __dirname,
+  },
 };
 
 export default nextConfig;
