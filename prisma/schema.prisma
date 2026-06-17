@@ -2,6 +2,8 @@
 // the per-cell data the UI edits, so a page reads/writes only its own table.
 generator client {
   provider = "prisma-client-js"
+  // "native" covers local dev; the musl target is for the Alpine Docker image.
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {

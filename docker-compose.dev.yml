@@ -1,0 +1,28 @@
+# Development override: swaps the `app` service for a hot-reloading dev server.
+# The base file (docker-compose.yml) still runs Postgres + migrations.
+#
+# Start dev mode with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Source is bind-mounted, so saving a file reloads instantly — no rebuild.
+services:
+  app:
+    build:
+      # `deps` stage has node_modules (and the generated Prisma client) but no
+      # production build — we run `next dev` against the live source instead.
+      target: deps
+    image: planner-next-dev
+    restart: "no"
+    # Docker Desktop's bind mount doesn't deliver inotify events, so file
+    # watching must poll. Webpack honors WATCHPACK_POLLING (Turbopack doesn't),
+    # hence `--webpack` for a reliably hot-reloading dev server in Docker.
+    environment:
+      WATCHPACK_POLLING: "true"
+    command: ["pnpm", "dev", "--webpack", "-H", "0.0.0.0"]
+    volumes:
+      # Live source from the host...
+      - .:/app
+      # ...but keep the image's node_modules and a container-local .next so the
+      # bind mount doesn't shadow them.
+      - /app/node_modules
+      - /app/.next

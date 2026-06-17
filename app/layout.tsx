@@ -30,7 +30,7 @@ export default function RootLayout({
         <div className="max-w-8xl mx-auto flex flex-col min-h-[80vh]">
           <header className="mb-5 flex flex-col md:flex-row justify-between gap-8">
             <div>
-              <h1 className="text-1xl md:text-4xl font-bold tracking-tighter leading-none mb-2 hover:opacity-60 transition-opacity duration-300">
+              <h1 className="text-1xl md:text-4xl font-bold leading-none mb-2 hover:opacity-60 transition-opacity duration-300">
                 <Link href="/">Minimalist Calendar</Link>
               </h1>
             </div>

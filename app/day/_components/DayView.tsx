@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { usePlannerStore, type Entry } from "@/hooks/usePlannerStore";
 import { NavHeader } from "@/components/NavHeader";
+import { EmojiBlock } from "@/components/EmojiBlock";
+import {
+  RichNoteEditor,
+  type RichNoteEditorHandle,
+} from "@/components/RichNoteEditor";
 import { saveDayEntry } from "../actions";
 
 function formatDate(date: Date): string {
@@ -22,6 +27,7 @@ export function DayView({
 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const { get, update } = usePlannerStore(initialEntries, saveDayEntry);
+  const editorRef = useRef<RichNoteEditorHandle>(null);
 
   const key = dateKey(currentDate);
   const entry = get(key);
@@ -62,14 +68,18 @@ export function DayView({
         </div>
         <div className="border-t border-l border-r border-b border-[#E5E5E5]">
           <div className="min-h-[300px] p-6 flex flex-col gap-4">
-            <textarea
+            <RichNoteEditor
+              key={key}
+              ref={editorRef}
               value={entry.note}
-              onChange={(e) => update(key, { note: e.target.value })}
-              placeholder="Write anything..."
-              className="flex-grow w-full min-h-[60vh] resize-none bg-transparent outline-none text-sm font-normal leading-relaxed text-[#404040] placeholder:text-[#D4D4D4] focus:text-black transition-colors duration-300"
+              onChange={(note) => update(key, { note })}
+              placeholder="Write anything... (paste or drop an image)"
             />
           </div>
         </div>
+      </div>
+      <div className="fixed bottom-6 right-6 z-50">
+        <EmojiBlock onSelect={(emoji) => editorRef.current?.insert(emoji)} />
       </div>
     </div>
   );

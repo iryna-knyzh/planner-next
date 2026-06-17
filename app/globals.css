@@ -12,6 +12,51 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Rich note editor (day page): resizable images + empty-state placeholder. */
+.rich-note .rich-img {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  max-width: 100%;
+  margin: 0.5rem 0;
+}
+
+.rich-note .rich-img img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.rich-note .rich-img[data-selected] img {
+  outline: 2px solid #404040;
+}
+
+/* Drag handle in the bottom-right corner, shown when the image is selected. */
+.rich-note .rich-img-handle {
+  display: none;
+  position: absolute;
+  right: -4px;
+  bottom: 4px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #404040;
+  border-radius: 50%;
+  background: #fff;
+  cursor: nwse-resize;
+}
+
+.rich-note .rich-img[data-selected] .rich-img-handle {
+  display: block;
+}
+
+.rich-note .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #d4d4d4;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 .underlined-textarea {
   line-height: 1.5em;
 

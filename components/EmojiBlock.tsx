@@ -1,6 +1,6 @@
 "use client";
 
-import "./Emoji.css";
+import "./EmojiBlock.css";
 import { useEffect, useRef, useState } from "react";
 import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import { ArrowDown, ArrowUp } from "lucide-react";
@@ -11,7 +11,16 @@ type TooltipState = {
   visible: boolean;
 };
 
-export const EmojiBlock = () => {
+/**
+ * Floating emoji picker. By default a picked emoji is copied to the clipboard
+ * (with a "Copied" tooltip). Pass `onSelect` to instead hand the emoji to the
+ * caller — e.g. the Day page inserts it straight into the note.
+ */
+export const EmojiBlock = ({
+  onSelect,
+}: {
+  onSelect?: (emoji: string) => void;
+}) => {
   const [emojiOpen, setEmojiOpen] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<TooltipState>({
@@ -21,6 +30,11 @@ export const EmojiBlock = () => {
   });
 
   const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
+    if (onSelect) {
+      onSelect(emojiData.emoji);
+      return;
+    }
+
     navigator.clipboard.writeText(emojiData.emoji);
 
     setTooltip({

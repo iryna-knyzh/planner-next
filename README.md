@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Planner
 
-## Getting Started
+A minimalist day, week, and month planner. Built with Next.js (App Router) and
+backed by Postgres through Prisma, so your notes are saved on the server and
+persist across devices and restarts.
 
-First, run the development server:
+## Features
+
+- **Three views** — switch between **Day**, **Week**, and **Month** pages.
+- **Notes & themes** — write free-form notes for each day/week/month and set a
+  "theme" (a focus or intention) per period. Edits save automatically.
+- **Emoji** — the Week page has an emoji picker; pick an emoji and it is copied
+  to your clipboard, ready to paste into any note.
+- **Images in notes** — on the **Day** page you can **paste** (Ctrl/Cmd+V) or
+  **drag & drop** an image straight into the note. Images are uploaded and
+  stored on the server; the note keeps a link to them.
+
+## Run everything in Docker
+
+Bring up Postgres, run the Prisma migrations, and start the app with a single
+command:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000). The stack is three
+services:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `postgres` — the database (data persists in the `planner_pgdata` volume).
+- `migrate` — a one-shot job that runs `prisma migrate deploy`, then exits.
+- `app` — the Next.js server (standalone build), started only after `migrate`
+  succeeds. Images pasted/dropped into the Day note are uploaded via
+  `/api/uploads` and stored on the `planner_uploads` volume.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Stop everything with `docker compose down` (add `-v` to also drop the database
+and uploaded images).
 
-## Learn More
+## Local development
 
-To learn more about Next.js, take a look at the following resources:
+You still need a database. Start just Postgres with Docker, then run the dev
+server on your machine:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+docker compose up -d postgres   # Postgres on localhost:5433
+pnpm install
+pnpm prisma migrate dev         # apply migrations
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000). The database connection
+string lives in `.env` (`DATABASE_URL`); see `.env.example`.
 
-## Deploy on Vercel
+### Hot-reloading dev server in Docker
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If you'd rather not install Node/pnpm locally, run the whole dev server in a
+container with the dev override — source is bind-mounted, so edits hot-reload:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm docker:dev
+# = docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+This swaps the `app` service for `next dev` (still runs Postgres + migrations).
+It uses `--webpack` with `WATCHPACK_POLLING` because Docker Desktop's bind mount
+doesn't deliver inotify events, so file watching has to poll. Plain
+`docker compose up` is unchanged and still runs the production build.
+
+## Tech stack
+
+- [Next.js](https://nextjs.org) (App Router) + React
+- [Prisma](https://www.prisma.io) ORM with PostgreSQL
+- [Tailwind CSS](https://tailwindcss.com)
+- [Tiptap](https://tiptap.dev) for the rich Day note editor (inline images)
+- [emoji-picker-react](https://www.npmjs.com/package/emoji-picker-react)

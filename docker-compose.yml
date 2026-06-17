@@ -17,5 +17,41 @@ services:
       timeout: 5s
       retries: 5
 
+  # One-shot job: apply pending Prisma migrations, then exit. The app waits
+  # for this to finish. Uses the `builder` stage because it ships the Prisma
+  # CLI (the slim runtime image does not).
+  migrate:
+    build:
+      context: .
+      target: builder
+    image: planner-next-builder
+    command: ["pnpm", "prisma", "migrate", "deploy"]
+    environment:
+      DATABASE_URL: "postgresql://planner:planner@postgres:5432/planner?schema=public"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    build:
+      context: .
+      target: runner
+    image: planner-next
+    container_name: planner_app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql://planner:planner@postgres:5432/planner?schema=public"
+      UPLOAD_DIR: /app/uploads
+    ports:
+      - "3000:3000"
+    volumes:
+      - planner_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
 volumes:
   planner_pgdata:
+  planner_uploads:

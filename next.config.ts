@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // Emit a self-contained server (.next/standalone) so the Docker runtime
+  // image can run `node server.js` without installing node_modules.
+  output: "standalone",
+  // Trace from this directory; the pnpm-workspace.yaml here marks the root.
+  outputFileTracingRoot: __dirname,
 };
 
 export default nextConfig;

@@ -8,14 +8,24 @@
     "start": "next start",
     "lint": "eslint",
     "db:up": "docker compose up -d",
+    "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up",
     "db:migrate": "prisma migrate dev",
     "postinstall": "prisma generate"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "prisma"]
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma"
+    ]
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "@tiptap/extension-image": "^3.27.0",
+    "@tiptap/extension-placeholder": "^3.27.0",
+    "@tiptap/pm": "^3.27.0",
+    "@tiptap/react": "^3.27.0",
+    "@tiptap/starter-kit": "^3.27.0",
     "date-fns": "^4.4.0",
     "emoji-picker-react": "^4.19.1",
     "lucide-react": "^1.18.0",
