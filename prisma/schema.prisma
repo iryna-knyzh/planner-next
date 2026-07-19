@@ -42,3 +42,13 @@ model MonthEntry {
 
   @@map("month_entries")
 }
+
+// Year page: one row per form field of the yearly planning sheet.
+// key = "year:<year>:<field>" (e.g. "year:2026:vision", "year:2026:goal:0").
+model YearEntry {
+  key       String   @id
+  note      String   @default("")
+  updatedAt DateTime @updatedAt
+
+  @@map("year_entries")
+}

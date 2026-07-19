@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const links = [
-  { href: "/day", label: "Day" },
-  { href: "/week", label: "Week" },
-  { href: "/month", label: "Month" },
-];
+import { useI18n } from "@/lib/i18n/LanguageProvider";
 
 export function Nav() {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const links = [
+    { href: "/day", label: t.nav.day },
+    { href: "/week", label: t.nav.week },
+    { href: "/month", label: t.nav.month },
+    { href: "/year", label: t.nav.year },
+  ];
 
   return (
     <nav className="inline-flex rounded-2xl border border-gray-200 bg-white p-1 shadow-sm">

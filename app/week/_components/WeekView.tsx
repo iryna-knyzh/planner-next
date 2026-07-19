@@ -17,6 +17,7 @@ import { usePlannerStore, type Entry } from "@/hooks/usePlannerStore";
 import { NavHeader } from "@/components/NavHeader";
 import { EmojiBlock } from "@/components/EmojiBlock";
 import { saveWeekEntry } from "../actions";
+import { useI18n } from "@/lib/i18n/LanguageProvider";
 
 enum DAYS {
   MON = 0,
@@ -67,6 +68,7 @@ export function WeekView({
 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const { get, update } = usePlannerStore(initialEntries, saveWeekEntry);
+  const { t } = useI18n();
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
@@ -84,7 +86,7 @@ export function WeekView({
   return (
     <div>
       <NavHeader
-        title={weekStart.toLocaleString("default", { month: "long" })}
+        title={t.months[weekStart.getMonth()]}
         onPrev={() => setCurrentDate(subWeeks(currentDate, 1))}
         onNext={() => setCurrentDate(addWeeks(currentDate, 1))}
       />
@@ -97,7 +99,7 @@ export function WeekView({
               htmlFor="week-theme"
               className="mr-4 text-xs font-medium uppercase tracking-[0.25em] text-[#737373]"
             >
-              Theme:
+              {t.theme}
             </label>
             <input
               id="week-theme"
@@ -106,7 +108,7 @@ export function WeekView({
               onChange={(e) =>
                 update(weekEntryKey(year, weekKey), { theme: e.target.value })
               }
-              placeholder="Focus, intention, or goal for this week..."
+              placeholder={t.weekThemePlaceholder}
               className="w-full bg-transparent text-1xl md:text-1xl font-normal tracking-tight outline-none border-none placeholder:text-[#D4D4D4] focus:text-black transition-colors duration-300"
             />
           </div>
@@ -163,7 +165,7 @@ export function WeekView({
                         isWeekend ? "text-[#A67C52]" : "text-[#737373]"
                       }`}
                     >
-                      {format(day, "EEE")}
+                      {t.weekdaysShort[getDay(day)]}
                     </span>
                     {isTodayDate && (
                       <span className="w-1.5 h-1.5 bg-black rounded-full ml-auto" />
@@ -185,7 +187,7 @@ export function WeekView({
           <div className="w-full lg:w-3/6 lg:border-l lg:border-r lg:border-b border-t border-[#E5E5E5] flex flex-col">
             <div className="p-6 md:p-8 border-b border-[#E5E5E5] bg-[#FAFAFA]">
               <h2 className="text-xs font-medium uppercase tracking-[0.25em] text-[#737373] mb-1">
-                Weekly Notes
+                {t.weeklyNotes}
               </h2>
             </div>
             <textarea
@@ -193,7 +195,7 @@ export function WeekView({
               onChange={(e) =>
                 update(weekEntryKey(year, weekKey), { note: e.target.value })
               }
-              placeholder="Type your thoughts, insights..."
+              placeholder={t.weeklyNotesPlaceholder}
               className="flex-grow w-full h-[300px] p-6 md:p-8 bg-transparent resize-none outline-none text-lg font-light leading-relaxed text-[#404040] placeholder:text-[#D4D4D4] focus:bg-white transition-colors duration-300"
             />
           </div>

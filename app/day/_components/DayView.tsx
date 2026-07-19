@@ -9,12 +9,8 @@ import {
   type RichNoteEditorHandle,
 } from "@/components/RichNoteEditor";
 import { saveDayEntry } from "../actions";
-
-function formatDate(date: Date): string {
-  const month = date.toLocaleDateString("en-US", { month: "long" });
-  const day = date.toLocaleDateString("en-US", { day: "numeric" });
-  return `${month} ${day}`;
-}
+import { useI18n } from "@/lib/i18n/LanguageProvider";
+import { formatDayTitle } from "@/lib/i18n/translations";
 
 function dateKey(date: Date): string {
   return date.toISOString().slice(0, 10);
@@ -28,6 +24,7 @@ export function DayView({
   const [currentDate, setCurrentDate] = useState(new Date());
   const { get, update } = usePlannerStore(initialEntries, saveDayEntry);
   const editorRef = useRef<RichNoteEditorHandle>(null);
+  const { lang, t } = useI18n();
 
   const key = dateKey(currentDate);
   const entry = get(key);
@@ -46,7 +43,11 @@ export function DayView({
 
   return (
     <div>
-      <NavHeader title={formatDate(currentDate)} onPrev={prev} onNext={next} />
+      <NavHeader
+        title={formatDayTitle(lang, currentDate)}
+        onPrev={prev}
+        onNext={next}
+      />
       <div className="p-5">
         <div className="flex-grow flex flex-col lg:flex-row">
           <div className="w-full flex items-center mb-2 md:mb-10 pb-2 border-b border-[#E5E5E5]">
@@ -54,14 +55,14 @@ export function DayView({
               htmlFor="day-theme"
               className="mr-4 text-xs font-medium uppercase tracking-[0.25em] text-[#737373]"
             >
-              Theme:
+              {t.theme}
             </label>
             <input
               id="day-theme"
               type="text"
               value={entry.theme}
               onChange={(e) => update(key, { theme: e.target.value })}
-              placeholder="Focus, intention, or goal for this day..."
+              placeholder={t.dayThemePlaceholder}
               className="w-full bg-transparent font-normal tracking-tight outline-none border-none placeholder:text-[#D4D4D4] focus:text-black transition-colors duration-300"
             />
           </div>
@@ -73,7 +74,7 @@ export function DayView({
               ref={editorRef}
               value={entry.note}
               onChange={(note) => update(key, { note })}
-              placeholder="Write anything... (paste or drop an image)"
+              placeholder={t.dayNotePlaceholder}
             />
           </div>
         </div>
