@@ -23,7 +23,18 @@ export interface Dict {
   weeklyNotesPlaceholder: string;
   monthNotes: string;
   monthNotesPlaceholder: string;
+  addHabit: string;
+  habitName: string;
   motto: string;
+  /** Labels for the selection formatting toolbar (FormatBubbleMenu). */
+  format: {
+    bold: string;
+    italic: string;
+    underline: string;
+    strike: string;
+    highlight: string;
+    clear: string;
+  };
   heroTitle: string;
   heroSubtitle: string;
   months: string[]; // 12, January → December
@@ -44,11 +55,21 @@ export const translations: Record<Lang, Dict> = {
     weeklyNotesPlaceholder: "Type your thoughts, insights...",
     monthNotes: "Month Notes",
     monthNotesPlaceholder: "Notes...",
+    addHabit: "Add habit",
+    habitName: "habit",
     motto: "Simplicity is the ultimate sophistication.",
+    format: {
+      bold: "Bold",
+      italic: "Italic",
+      underline: "Underline",
+      strike: "Strikethrough",
+      highlight: "Highlight",
+      clear: "Clear formatting",
+    },
     heroTitle:
-      "Build a life system that works even in times of change.",
+      "Plan your life. Build habits. Own your time.",
     heroSubtitle:
-      "A tool for those who want to consciously design their future, build strong habits, and create a freer, more adaptive life.",
+      "A minimalist calendar for planning your day, week, month, and year — without the extra noise.",
     months: [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December",
@@ -68,11 +89,21 @@ export const translations: Record<Lang, Dict> = {
     weeklyNotesPlaceholder: "Запишите свои мысли, идеи...",
     monthNotes: "Заметки месяца",
     monthNotesPlaceholder: "Заметки...",
+    addHabit: "Добавить привычку",
+    habitName: "привычка",
     motto: "Простота — высшая форма изысканности.",
+    format: {
+      bold: "Жирный",
+      italic: "Курсив",
+      underline: "Подчёркнутый",
+      strike: "Зачёркнутый",
+      highlight: "Выделение",
+      clear: "Убрать форматирование",
+    },
     heroTitle:
-      "Создай систему жизни, которая работает даже во времена перемен.",
+      "Планируй жизнь. Формируй привычки. Управляй своим временем.",
     heroSubtitle:
-      "Инструмент для тех, кто хочет осознанно спроектировать своё будущее, создать сильные привычки и построить более свободную и адаптивную жизнь.",
+      "Минималистичный календарь для планирования дня, недели, месяца и года — без лишнего шума.",
     months: [
       "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
       "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
@@ -92,11 +123,21 @@ export const translations: Record<Lang, Dict> = {
     weeklyNotesPlaceholder: "Запишіть свої думки, ідеї...",
     monthNotes: "Нотатки місяця",
     monthNotesPlaceholder: "Нотатки...",
+    addHabit: "Додати звичку",
+    habitName: "звичка",
     motto: "Простота — це найвища витонченість.",
+    format: {
+      bold: "Жирний",
+      italic: "Курсив",
+      underline: "Підкреслений",
+      strike: "Закреслений",
+      highlight: "Виділення",
+      clear: "Прибрати форматування",
+    },
     heroTitle:
-      "Створи систему життя, яка працює навіть у часи змін.",
+      "Плануй життя. Будуй звички. Керуй своїм часом.",
     heroSubtitle:
-      "Інструмент для тих, хто хоче свідомо спроєктувати своє майбутнє, створити сильні звички та побудувати більш вільне й адаптивне життя.",
+      "Мінімалістичний календар для планування дня, тижня, місяця та року — без зайвого шуму.",
     months: [
       "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
       "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень",

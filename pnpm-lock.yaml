@@ -11,6 +11,9 @@ importers:
       '@prisma/client':
         specifier: ^6.19.3
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
+      '@tiptap/extension-highlight':
+        specifier: 3.27.0
+        version: 3.27.0(@tiptap/core@3.27.0(@tiptap/pm@3.27.0))
       '@tiptap/extension-image':
         specifier: ^3.27.0
         version: 3.27.0(@tiptap/core@3.27.0(@tiptap/pm@3.27.0))
@@ -671,6 +674,11 @@ packages:
 
   '@tiptap/extension-heading@3.27.0':
     resolution: {integrity: sha512-KDN/8RyL3/VoXpSzRtNQ3hsreBUbHgMGmpqJpRvbykQ6wJ/W421uHfZR/hCsB3RNRB0kHZJdw4hDLfP73Ff6Ig==}
+    peerDependencies:
+      '@tiptap/core': 3.27.0
+
+  '@tiptap/extension-highlight@3.27.0':
+    resolution: {integrity: sha512-p7Epzx8KbxxqIUG68dFk2lpmPp0Bvth7K11oL/pAlaXOR2Z4X9kef5+FJ/fEDehUtWPzfzVn/eO2a5bYN7k2AA==}
     peerDependencies:
       '@tiptap/core': 3.27.0
 
@@ -2934,6 +2942,10 @@ snapshots:
       '@tiptap/core': 3.27.0(@tiptap/pm@3.27.0)
 
   '@tiptap/extension-heading@3.27.0(@tiptap/core@3.27.0(@tiptap/pm@3.27.0))':
+    dependencies:
+      '@tiptap/core': 3.27.0(@tiptap/pm@3.27.0)
+
+  '@tiptap/extension-highlight@3.27.0(@tiptap/core@3.27.0(@tiptap/pm@3.27.0))':
     dependencies:
       '@tiptap/core': 3.27.0(@tiptap/pm@3.27.0)
 

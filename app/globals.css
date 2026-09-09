@@ -12,6 +12,134 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Tailwind v4 dropped Preflight's pointer cursor on interactive elements. */
+a,
+button,
+summary,
+[role="button"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: default;
+}
+
+/* Rich note typography. Tailwind v4 Preflight strips the browser defaults from
+   strong/em/u/s/headings/lists, so without these rules the marks the toolbar
+   applies would be stored but invisible. */
+.rich-note .ProseMirror > * + * {
+  margin-top: 0.6em;
+}
+
+.rich-note .ProseMirror strong {
+  font-weight: 600;
+}
+
+.rich-note .ProseMirror em {
+  font-style: italic;
+}
+
+.rich-note .ProseMirror u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rich-note .ProseMirror s {
+  text-decoration: line-through;
+}
+
+/* Highlight marks carry their colour inline (multicolor: true writes
+   style="background-color: …"), so only the shape is styled here. */
+.rich-note .ProseMirror mark {
+  /* Coloured highlights carry an inline background-color; this is the fallback
+     for a plain <mark> (Highlight's own ==text== rule / Mod-Shift-h). */
+  background-color: #fef3c7;
+  color: inherit;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 0.1em 0.15em;
+  border-radius: 2px;
+}
+
+.rich-note .ProseMirror h1,
+.rich-note .ProseMirror h2,
+.rich-note .ProseMirror h3 {
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: #262626;
+}
+
+.rich-note .ProseMirror h1 {
+  font-size: 1.5em;
+}
+
+.rich-note .ProseMirror h2 {
+  font-size: 1.25em;
+}
+
+.rich-note .ProseMirror h3 {
+  font-size: 1.1em;
+}
+
+.rich-note .ProseMirror ul,
+.rich-note .ProseMirror ol {
+  padding-left: 1.25em;
+}
+
+.rich-note .ProseMirror ul {
+  list-style: disc;
+}
+
+.rich-note .ProseMirror ol {
+  list-style: decimal;
+}
+
+.rich-note .ProseMirror li {
+  margin: 0.15em 0;
+}
+
+.rich-note .ProseMirror li p {
+  margin: 0;
+}
+
+.rich-note .ProseMirror blockquote {
+  padding-left: 0.9em;
+  border-left: 2px solid #e5e5e5;
+  color: #737373;
+}
+
+.rich-note .ProseMirror code {
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  background-color: #f5f5f5;
+  font-size: 0.9em;
+}
+
+.rich-note .ProseMirror pre {
+  padding: 0.75em 0.9em;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  overflow-x: auto;
+}
+
+.rich-note .ProseMirror pre code {
+  padding: 0;
+  background: none;
+}
+
+.rich-note .ProseMirror hr {
+  border-top: 1px solid #e5e5e5;
+  margin: 1em 0;
+}
+
+.rich-note .ProseMirror a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: #a67c52;
+}
+
 /* Rich note editor (day page): resizable images + empty-state placeholder. */
 .rich-note .rich-img {
   position: relative;

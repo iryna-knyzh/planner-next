@@ -16,6 +16,7 @@ import {
 import { usePlannerStore, type Entry } from "@/hooks/usePlannerStore";
 import { NavHeader } from "@/components/NavHeader";
 import { EmojiBlock } from "@/components/EmojiBlock";
+import { RichNoteEditor } from "@/components/RichNoteEditor";
 import { saveWeekEntry } from "../actions";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 
@@ -190,14 +191,17 @@ export function WeekView({
                 {t.weeklyNotes}
               </h2>
             </div>
-            <textarea
-              value={weekEntry.note}
-              onChange={(e) =>
-                update(weekEntryKey(year, weekKey), { note: e.target.value })
-              }
-              placeholder={t.weeklyNotesPlaceholder}
-              className="flex-grow w-full h-[300px] p-6 md:p-8 bg-transparent resize-none outline-none text-lg font-light leading-relaxed text-[#404040] placeholder:text-[#D4D4D4] focus:bg-white transition-colors duration-300"
-            />
+            {/* `key` remounts the editor when the week changes: Tiptap owns its
+                DOM, so it is not swapped by a `value` prop alone. */}
+            <div className="flex-grow p-6 md:p-8 focus-within:bg-white transition-colors duration-300">
+              <RichNoteEditor
+                key={weekEntryKey(year, weekKey)}
+                value={weekEntry.note}
+                onChange={(note) => update(weekEntryKey(year, weekKey), { note })}
+                placeholder={t.weeklyNotesPlaceholder}
+                editorClass="min-h-[300px] text-lg font-light leading-relaxed text-[#404040]"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -14,6 +14,20 @@ export interface YField {
   label?: string; // translation key for the field label (optional)
   kind: "line" | "area";
   rows?: number; // textarea rows when kind === "area"
+  placeholder?: string; // translation key for the input placeholder (optional)
+}
+
+// A grid table: `columns` are translation keys for the header, and a row is
+// either a full-width section heading or one field per column. Column headers
+// collapse into per-cell labels below md.
+export type YTableRow =
+  | { title: string } // full-width static heading (translation key)
+  | { section: YField } // full-width heading the user fills in
+  | { cells: YField[] };
+
+export interface YTable {
+  columns: string[];
+  rows: YTableRow[];
 }
 
 export interface YGroup {
@@ -21,6 +35,8 @@ export interface YGroup {
   hint?: string; // translation key
   cols: Cols;
   fields: YField[];
+  numbered?: boolean; // prefix each field with its position in the group
+  table?: YTable; // rendered instead of `fields` when present
 }
 
 export interface YTab {
@@ -31,47 +47,81 @@ export interface YTab {
   groups: YGroup[];
 }
 
-const line = (key: string, label?: string): YField => ({ key, label, kind: "line" });
+const line = (key: string, label?: string, placeholder?: string): YField => ({
+  key,
+  label,
+  kind: "line",
+  placeholder,
+});
 const area = (key: string, label?: string, rows = 2): YField => ({
   key,
   label,
   kind: "area",
   rows,
 });
-// Numbered list of unlabeled storage keys sharing a base.
-const plain = (base: string, count: number, kind: "line" | "area" = "line"): YField[] =>
-  Array.from({ length: count }, (_, i) => ({ key: `${base}.${i}`, kind }));
+// One sphere of the systems table: a full-width heading followed by `count`
+// rows, each holding two habit → why pairs. The heading is fixed text unless
+// `editable`, in which case the sphere name is the user's to fill in and `name`
+// only hints at it.
+const sphereRows = (
+  slug: string,
+  name: string,
+  { editable = false, count = 2 } = {},
+): YTableRow[] => [
+  editable ? { section: line(`sys.sphere.${slug}`, undefined, name) } : { title: name },
+  ...Array.from({ length: count }, (_, r) => ({
+    cells: [0, 1].flatMap((pair) => {
+      const i = r * 2 + pair;
+      return [line(`sys.sphere.${slug}.h${i}`), line(`sys.sphere.${slug}.h${i}.why`)];
+    }),
+  })),
+];
+
+// A numbered list of unlabeled storage keys sharing a base.
+const numbered = (base: string, count: number): YField[] =>
+  Array.from({ length: count }, (_, i) => line(`${base}.${i}`));
 
 export const yearTabs: YTab[] = [
   {
-    id: "vision",
-    label: "tab.vision",
-    subtitle: "tab.vision.sub",
+    id: "system",
+    label: "tab.system",
+    subtitle: "tab.system.sub",
     groups: [
       {
-        title: "g.ideal.title",
-        cols: 1,
-        fields: [area("v.ideal", "v.ideal", 4)],
-      },
-      {
-        title: "g.10.title",
+        title: "g.future.title",
+        hint: "sys.future.hint",
         cols: 2,
         fields: [
-          area("v.10.live", "v.10.live"),
-          area("v.10.do", "v.10.do"),
-          area("v.10.earn", "v.10.earn"),
-          area("v.10.freedom", "v.10.freedom"),
+          area("sys.think", "sys.think"),
+          area("sys.skills", "sys.skills", 3),
+          area("sys.does", "sys.does", 3),
+          area("sys.stops", "sys.stops"),
         ],
       },
       {
-        title: "g.5.title",
+        title: "g.systems.title",
+        hint: "sys.systems.hint",
         cols: 2,
-        fields: [
-          area("v.5.person", "v.5.person", 3),
-          area("v.5.created", "v.5.created", 3),
-        ],
+        fields: [],
+        table: {
+          columns: ["col.habit", "col.why", "col.habit", "col.why"],
+          rows: [
+            ...sphereRows("sport", "sph.sport"),
+            ...sphereRows("health", "sph.health"),
+            ...sphereRows("income", "sph.income"),
+            ...sphereRows("hobby", "sph.hobby"),
+            ...sphereRows("wish", "sph.wish"),
+            ...sphereRows("extra", "sph.extra", { editable: true }),
+          ],
+        },
       },
-      { title: "g.1.title", cols: 1, fields: [area("v.1.change", "v.1.change", 3)] },
+      {
+        title: "g.goals.title",
+        hint: "sys.goals.hint",
+        cols: 2,
+        numbered: true,
+        fields: numbered("goal", 10),
+      },
     ],
   },
   {
@@ -95,42 +145,6 @@ export const yearTabs: YTab[] = [
         ],
       },
       { title: "g.example.title", hint: "lev.example", cols: 1, fields: [] },
-    ],
-  },
-  {
-    id: "system",
-    label: "tab.system",
-    subtitle: "tab.system.sub",
-    groups: [
-      {
-        title: "g.future.title",
-        hint: "sys.future.hint",
-        cols: 2,
-        fields: [
-          area("sys.think", "sys.think"),
-          area("sys.skills", "sys.skills", 3),
-          area("sys.does", "sys.does", 3),
-          area("sys.stops", "sys.stops"),
-        ],
-      },
-      {
-        title: "g.systems.title",
-        cols: 2,
-        fields: [
-          line("sys.health.habit", "sys.health.habit"),
-          line("sys.health.why", "sys.health.why"),
-          line("sys.finance.habit", "sys.finance.habit"),
-          line("sys.finance.why", "sys.finance.why"),
-          line("sys.growth.habit", "sys.growth.habit"),
-          line("sys.growth.why", "sys.growth.why"),
-        ],
-      },
-      {
-        title: "g.key5.title",
-        hint: "sys.key5.hint",
-        cols: 3,
-        fields: plain("key5", 15, "line"),
-      },
     ],
   },
   {
@@ -168,11 +182,42 @@ export const yearTabs: YTab[] = [
       },
     ],
   },
+  {
+    id: "vision",
+    label: "tab.vision",
+    subtitle: "tab.vision.sub",
+    groups: [
+      {
+        title: "g.ideal.title",
+        cols: 1,
+        fields: [area("v.ideal", "v.ideal", 4)],
+      },
+      {
+        title: "g.10.title",
+        cols: 2,
+        fields: [
+          area("v.10.live", "v.10.live"),
+          area("v.10.do", "v.10.do"),
+          area("v.10.earn", "v.10.earn"),
+          area("v.10.freedom", "v.10.freedom"),
+        ],
+      },
+      {
+        title: "g.5.title",
+        cols: 2,
+        fields: [
+          area("v.5.person", "v.5.person", 3),
+          area("v.5.created", "v.5.created", 3),
+        ],
+      },
+      { title: "g.1.title", cols: 1, fields: [area("v.1.change", "v.1.change", 3)] },
+    ],
+  },
 ];
 
 export const yearLabels: Record<Lang, Record<string, string>> = {
   ru: {
-    "tab.vision": "Видение года",
+    "tab.vision": "Глобальное видение",
     "tab.vision.sub": "Куда я хочу прийти? Какую жизнь я хочу создать?",
     "tab.lever": "Рычаг перемен",
     "tab.lever.sub": "Какое одно изменение создаст наибольшее влияние?",
@@ -207,19 +252,22 @@ export const yearLabels: Record<Lang, Record<string, string>> = {
 
     "g.future.title": "Моя будущая версия",
     "sys.future.hint": "Человек, у которого есть желаемый результат:",
-    "sys.think": "Она думает:",
+    "sys.think": "Её убеждения:",
     "sys.skills": "Какими навыками она обладает?",
     "sys.does": "Она делает регулярно:",
     "sys.stops": "Она больше не делает:",
+    "g.goals.title": "Цели на год",
+    "sys.goals.hint": "10 целей, которые сделают этот год удачным.",
     "g.systems.title": "Мои системы и привычки",
-    "sys.health.habit": "Здоровье · Привычка",
-    "sys.health.why": "Здоровье · Зачем",
-    "sys.finance.habit": "Финансы / Карьера · Привычка",
-    "sys.finance.why": "Финансы / Карьера · Зачем",
-    "sys.growth.habit": "Развитие · Привычка",
-    "sys.growth.why": "Развитие · Зачем",
-    "g.key5.title": "Мои 5 ключевых привычек года",
-    "sys.key5.hint": "Привычка · Когда/как · Зачем",
+    "sys.systems.hint": "Для каждой сферы — привычка и зачем она мне.",
+    "col.habit": "Привычка",
+    "col.why": "Зачем",
+    "sph.sport": "Спорт",
+    "sph.health": "Здоровье",
+    "sph.income": "Доход",
+    "sph.hobby": "Хобби",
+    "sph.wish": "Желания",
+    "sph.extra": "Своя сфера",
 
     "g.control.title": "Моя зона контроля",
     "af.notcontrol": "Я не могу контролировать:",
@@ -236,7 +284,7 @@ export const yearLabels: Record<Lang, Record<string, string>> = {
   },
 
   en: {
-    "tab.vision": "Year Vision",
+    "tab.vision": "Global Vision",
     "tab.vision.sub": "Where do I want to arrive? What life do I want to create?",
     "tab.lever": "Lever of Change",
     "tab.lever.sub": "Which single change will create the biggest impact?",
@@ -271,19 +319,22 @@ export const yearLabels: Record<Lang, Record<string, string>> = {
 
     "g.future.title": "My future self",
     "sys.future.hint": "The person who already has the desired result:",
-    "sys.think": "She thinks:",
+    "sys.think": "Her beliefs:",
     "sys.skills": "What skills does she have?",
     "sys.does": "She does regularly:",
     "sys.stops": "She no longer does:",
+    "g.goals.title": "Goals for the year",
+    "sys.goals.hint": "10 goals that will make this year a good one.",
     "g.systems.title": "My systems and habits",
-    "sys.health.habit": "Health · Habit",
-    "sys.health.why": "Health · Why",
-    "sys.finance.habit": "Finances / Career · Habit",
-    "sys.finance.why": "Finances / Career · Why",
-    "sys.growth.habit": "Growth · Habit",
-    "sys.growth.why": "Growth · Why",
-    "g.key5.title": "My 5 key habits of the year",
-    "sys.key5.hint": "Habit · When/how · Why",
+    "sys.systems.hint": "For every sphere — the habit and why it matters to me.",
+    "col.habit": "Habit",
+    "col.why": "Why",
+    "sph.sport": "Sport",
+    "sph.health": "Health",
+    "sph.income": "Income",
+    "sph.hobby": "Hobby",
+    "sph.wish": "Wishes",
+    "sph.extra": "Own sphere",
 
     "g.control.title": "My zone of control",
     "af.notcontrol": "I can't control:",
@@ -300,7 +351,7 @@ export const yearLabels: Record<Lang, Record<string, string>> = {
   },
 
   uk: {
-    "tab.vision": "Бачення року",
+    "tab.vision": "Глобальне бачення",
     "tab.vision.sub": "Куди я хочу прийти? Яке життя я хочу створити?",
     "tab.lever": "Важіль змін",
     "tab.lever.sub": "Яка одна зміна створить найбільший вплив?",
@@ -335,19 +386,22 @@ export const yearLabels: Record<Lang, Record<string, string>> = {
 
     "g.future.title": "Моя майбутня версія",
     "sys.future.hint": "Людина, яка має бажаний результат:",
-    "sys.think": "Вона думає:",
+    "sys.think": "Її переконання:",
     "sys.skills": "Вона має які навички?",
     "sys.does": "Вона робить регулярно:",
     "sys.stops": "Вона більше не робить:",
+    "g.goals.title": "Цілі на рік",
+    "sys.goals.hint": "10 цілей, які зроблять цей рік вдалим.",
     "g.systems.title": "Мої системи та звички",
-    "sys.health.habit": "Здоров'я · Звичка",
-    "sys.health.why": "Здоров'я · Навіщо",
-    "sys.finance.habit": "Фінанси / Кар'єра · Звичка",
-    "sys.finance.why": "Фінанси / Кар'єра · Навіщо",
-    "sys.growth.habit": "Розвиток · Звичка",
-    "sys.growth.why": "Розвиток · Навіщо",
-    "g.key5.title": "Мої 5 ключових звичок року",
-    "sys.key5.hint": "Звичка · Коли/як · Навіщо",
+    "sys.systems.hint": "Для кожної сфери — звичка і навіщо вона мені.",
+    "col.habit": "Звичка",
+    "col.why": "Навіщо",
+    "sph.sport": "Спорт",
+    "sph.health": "Здоров'я",
+    "sph.income": "Дохід",
+    "sph.hobby": "Хобі",
+    "sph.wish": "Бажання",
+    "sph.extra": "Своя сфера",
 
     "g.control.title": "Моя зона контролю",
     "af.notcontrol": "Я не можу контролювати:",
